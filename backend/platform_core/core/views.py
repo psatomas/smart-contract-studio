@@ -14,3 +14,6 @@ def get_contracts(request):
 
 def get_users(request):
     return JsonResponse({"users": []})
+
+def get_transactions(request):
+    return JsonResponse({"transactions": []})
