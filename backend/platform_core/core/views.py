@@ -7,3 +7,9 @@ def index(request):
 
 def hello_world(request):
     return JsonResponse({"message": "Hello from Django"})
+
+def get_contracts(request):
+    return JsonResponse({"contracts": []})
+
+def get_users(request):
+    return JsonResponse({"users": []})
