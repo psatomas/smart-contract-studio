@@ -9,7 +9,8 @@ def hello_world(request):
     return JsonResponse({"message": "Hello from Django"})
 
 def get_contracts(request):
-    return JsonResponse({"contracts": []})
+    contract = {"id": 1, "name": "Test Contract", "status": "active"}
+    return JsonResponse({"contracts": [contract]})
 
 def get_users(request):
     return JsonResponse({"users": []})
