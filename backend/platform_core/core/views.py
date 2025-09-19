@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.http import JsonResponse
 
 def index(request):
     return HttpResponse("Hello, this is the core index page!")
-# Create your views here.
+
+def hello_world(request):
+    return JsonResponse({"message": "Hello from Django"})

@@ -3,3 +3,4 @@ asgiref==3.9.1
 sqlparse==0.5.3
 psycopg[binary]==3.2.9
 python-dotenv==1.0.1
+django-cors-headers>=4.0
