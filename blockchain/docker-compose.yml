@@ -1,5 +1,16 @@
 
 services:
+  backend:
+    build: .
+    working_dir: /app
+    command: uvicorn backend.platform_core.asgi:application --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"  # Host 8000 → container 8000
+    depends_on:
+      - blockchain
+    environment:
+      - DEBUG=1
+      - BLOCKCHAIN_URL=http://blockchain:8000 
   blockchain:
     build: .
     working_dir: /app/
