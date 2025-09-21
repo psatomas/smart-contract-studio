@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 def index(request):
     return HttpResponse("Hello, this is the core index page!")
@@ -17,4 +19,14 @@ def get_users(request):
 
 def get_transactions(request):
     return JsonResponse({"transactions": []})
+
+def receive_blockchain_data(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        tx_hash = data.get("tx_hash")
+        value = data.get("value")
+        print("Received from blockchain:", data)
+        # You could save to your Django models here
+        return JsonResponse({"status": "ok"})
+    return JsonResponse({"error": "POST required"}, status=400)
 
