@@ -7,5 +7,5 @@ urlpatterns = [
     path("api/hello/", views.hello_world),
     path("contracts/", views.get_contracts),
     path("users/", views.get_users),
-    path("transactions/", views.get_transactions), 
+    path("transactions/", views.get_transactions),
 ]

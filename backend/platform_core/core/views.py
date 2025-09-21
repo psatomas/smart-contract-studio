@@ -17,3 +17,4 @@ def get_users(request):
 
 def get_transactions(request):
     return JsonResponse({"transactions": []})
+

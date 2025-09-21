@@ -4,6 +4,8 @@ __pycache__/
 *.egg-info/
 .env
 .venv/
+backend/venv/
+blockchain/__pycache__/
 
 # Node
 node_modules/
