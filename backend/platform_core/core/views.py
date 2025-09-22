@@ -3,6 +3,9 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+from rest_framework import generics
+from .models import BlockchainEvent
+from .serializers import BlockchainEventSerializer
 
 def index(request):
     return HttpResponse("Hello, this is the core index page!")
@@ -29,4 +32,8 @@ def receive_blockchain_data(request):
         # You could save to your Django models here
         return JsonResponse({"status": "ok"})
     return JsonResponse({"error": "POST required"}, status=400)
+
+class BlockchainEventCreateView(generics.CreateAPIView):
+    queryset = BlockchainEvent.objects.all()
+    serializer_class = BlockchainEventSerializer
 
