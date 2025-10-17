@@ -1,0 +1,14 @@
+services:
+  hardhat:
+    build: .
+    container_name: hardhat
+    ports:
+      - "8545:8545"
+    volumes:
+      - .:/app
+    networks:
+      - eth-network
+
+networks:
+  eth-network:
+    driver: bridge

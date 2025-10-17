@@ -1,0 +1,8 @@
+services:
+  foundry:
+    build: .
+    container_name: foundry
+    volumes:
+    - .:/app
+    tty: true
+    stdin_open: true
