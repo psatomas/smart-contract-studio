@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:16
-    container_name: backend-db
+    #container_name: backend-db
     environment:
       POSTGRES_USER: tomaspsaraujo
       POSTGRES_PASSWORD: 1235812
@@ -20,7 +20,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: backend
+    #container_name: backend
     working_dir: /app
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:

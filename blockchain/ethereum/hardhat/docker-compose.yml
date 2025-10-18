@@ -1,7 +1,7 @@
 services:
   hardhat:
     build: .
-    container_name: hardhat
+    #container_name: hardhat
     ports:
       - "8545:8545"
     volumes:

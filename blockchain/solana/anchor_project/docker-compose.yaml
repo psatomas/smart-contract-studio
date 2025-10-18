@@ -1,7 +1,7 @@
 services:
   anchor:
     build: .
-    container_name: anchor_container
+    #container_name: anchor_container
     volumes:
       - ./:/workspace
     ports:

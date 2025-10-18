@@ -1,7 +1,7 @@
 services:
   foundry:
     build: .
-    container_name: foundry
+    #container_name: foundry
     volumes:
     - .:/app
     tty: true

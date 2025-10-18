@@ -1,0 +1,112 @@
+services:
+  # 🐘 DATABASE
+  db:
+    image: postgres:16
+    container_name: backend-db
+    environment:
+      POSTGRES_USER: tomaspsaraujo
+      POSTGRES_PASSWORD: 1235812
+      POSTGRES_DB: mydb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tomaspsaraujo -d mydb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  # 🐍 BACKEND (Django or FastAPI)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    working_dir: /app
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      hardhat:
+        condition: service_started
+    environment:
+      DATABASE_HOST: db
+      DATABASE_NAME: mydb
+      DATABASE_USER: tomaspsaraujo
+      DATABASE_PASSWORD: 1235812
+      BLOCKCHAIN_URL: http://hardhat:8545
+    networks:
+      - app-network
+
+  # 🌐 FRONTEND (React + Vite)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  # ⛓ HARDHAT Blockchain Node
+  hardhat:
+    build:
+      context: ./blockchain/ethereum/hardhat
+      dockerfile: Dockerfile
+    container_name: hardhat
+    ports:
+      - "8545:8545"
+    volumes:
+      - ./blockchain/hardhat:/app
+    command: npx hardhat node
+    networks:
+      - app-network
+
+  # 🧰 FOUNDRY (development CLI)
+  foundry:
+    build:
+      context: ./blockchain/ethereum/foundry
+      dockerfile: Dockerfile
+    container_name: foundry
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./blockchain/ethereum/foundry:/app
+    networks:
+      - app-network
+
+  # 🧱 ANCHOR (Solana validator)
+  anchor:
+    build:
+      context: ./blockchain/solana/anchor_project
+      dockerfile: Dockerfile
+    container_name: anchor
+    ports:
+      - "8899:8899"  # RPC
+      - "8900:8900"  # WebSocket
+      - "8901:8901"  # Optional
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./blockchain/anchor:/workspace
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
