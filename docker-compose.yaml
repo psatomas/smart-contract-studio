@@ -60,6 +60,23 @@ services:
     networks:
       - app-network
 
+  #Blockchain(fastapi)
+  blockchain:
+    build:
+      context: ./blockchain
+      dockerfile: Dockerfile
+    container_name: blockchain
+    working_dir: /app/
+    command: ./start.sh
+    ports:
+      - "9000:9000"
+    depends_on:
+      - backend
+    environment:
+      BACKEND_URL: http://backend:8000
+    networks:
+      - app-network
+
   # ⛓ HARDHAT Blockchain Node
   hardhat:
     build:
