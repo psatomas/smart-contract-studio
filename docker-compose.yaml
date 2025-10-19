@@ -52,7 +52,7 @@ services:
     ports:
       - "5173:5173"
     volumes:
-      - ./frontend:/app
+      - ./frontend/platform_ui:/app
     environment:
       - CHOKIDAR_USEPOLLING=true
     depends_on:
