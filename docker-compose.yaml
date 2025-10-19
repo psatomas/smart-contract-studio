@@ -100,7 +100,7 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ./blockchain/anchor:/workspace
+      - ./blockchain/solana/anchor_project:/workspace
     networks:
       - app-network
 

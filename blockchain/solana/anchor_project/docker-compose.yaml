@@ -1,12 +1,13 @@
 services:
   anchor:
     build: .
-    #container_name: anchor_container
+    #container_name: anchor_container2
     volumes:
       - ./:/workspace
     ports:
-      - "8899:8899" # RPC
-      - "8900:8900" # WebSocket
-      - "8901:8901" # Optional
+      - "8899:8899"
+      - "8900:8900"
+      - "8901:8901"
     stdin_open: true
     tty: true
+    command: /root/.local/share/solana/install/active_release/bin/solana-test-validator --reset

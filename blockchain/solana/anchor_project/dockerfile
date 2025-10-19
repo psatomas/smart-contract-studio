@@ -6,7 +6,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Solana CLI
-RUN sh -c "$(curl -sSfL https://release.solana.com/stable/install)"
+RUN sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
 
 # Add Solana CLI to PATH
 ENV PATH="/root/.local/share/solana/install/active_release/bin:${PATH}"
@@ -21,4 +21,4 @@ WORKDIR /workspace
 EXPOSE 8899 8900 8901
 
 # Start shell (you can manually start test-validator)
-CMD ["/bin/bash"]
+CMD ["/root/.local/share/solana/install/active_release/bin/solana-test-validator", "--reset"]
