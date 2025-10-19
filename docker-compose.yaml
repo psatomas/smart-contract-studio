@@ -69,7 +69,7 @@ services:
     ports:
       - "8545:8545"
     volumes:
-      - ./blockchain/hardhat:/app
+      - ./blockchain/ethereum/hardhat:/app
     command: npx hardhat node
     networks:
       - app-network
