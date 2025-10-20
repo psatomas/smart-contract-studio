@@ -20,13 +20,13 @@ services:
   # 🐍 BACKEND (Django or FastAPI)
   backend:
     build:
-      context: ./backend
+      context: ../backend
       dockerfile: Dockerfile
     container_name: backend
     working_dir: /app
     command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
-      - ./backend:/app
+      - ../backend:/app
     ports:
       - "8000:8000"
     depends_on:
@@ -46,13 +46,13 @@ services:
   # 🌐 FRONTEND (React + Vite)
   frontend:
     build:
-      context: ./frontend
+      context: ../frontend
       dockerfile: Dockerfile
     container_name: frontend
     ports:
       - "5173:5173"
     volumes:
-      - ./frontend/platform_ui:/app
+      - ../frontend/platform_ui:/app
     environment:
       - CHOKIDAR_USEPOLLING=true
     depends_on:
@@ -63,7 +63,7 @@ services:
   #Blockchain(fastapi)
   blockchain:
     build:
-      context: ./blockchain
+      context: ../blockchain
       dockerfile: Dockerfile
     container_name: blockchain
     working_dir: /app/
@@ -80,13 +80,13 @@ services:
   # ⛓ HARDHAT Blockchain Node
   hardhat:
     build:
-      context: ./blockchain/ethereum/hardhat
+      context: ../blockchain/ethereum/hardhat
       dockerfile: Dockerfile
     container_name: hardhat
     ports:
       - "8545:8545"
     volumes:
-      - ./blockchain/ethereum/hardhat:/app
+      - ../blockchain/ethereum/hardhat:/app
     command: npx hardhat node
     networks:
       - app-network
@@ -94,20 +94,20 @@ services:
   # 🧰 FOUNDRY (development CLI)
   foundry:
     build:
-      context: ./blockchain/ethereum/foundry
+      context: ../blockchain/ethereum/foundry
       dockerfile: Dockerfile
     container_name: foundry
     tty: true
     stdin_open: true
     volumes:
-      - ./blockchain/ethereum/foundry:/app
+      - ../blockchain/ethereum/foundry:/app
     networks:
       - app-network
 
   # 🧱 ANCHOR (Solana validator)
   anchor:
     build:
-      context: ./blockchain/solana/anchor_project
+      context: ../blockchain/solana/anchor_project
       dockerfile: Dockerfile
     container_name: anchor
     ports:
@@ -117,7 +117,7 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ./blockchain/solana/anchor_project:/workspace
+      - ../blockchain/solana/anchor_project:/workspace
     networks:
       - app-network
 
