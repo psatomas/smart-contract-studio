@@ -33,7 +33,7 @@ def receive_blockchain_data(request):
         return JsonResponse({"status": "ok"})
     return JsonResponse({"error": "POST required"}, status=400)
 
-class BlockchainEventCreateView(generics.CreateAPIView):
+class BlockchainEventListCreateView(generics.ListCreateAPIView):
     queryset = BlockchainEvent.objects.all()
     serializer_class = BlockchainEventSerializer
 

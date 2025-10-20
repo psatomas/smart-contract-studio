@@ -6,7 +6,7 @@ import time
 app = FastAPI(title="Blockchain Service")
 
 # URL for Django backend inside Docker network
-DJANGO_URL = "http://backend:9000/blockchain-data/"
+DJANGO_URL = "http://backend:8000/blockchain-data/"
 
 @app.get("/health")
 def health_check():
