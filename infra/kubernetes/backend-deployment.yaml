@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: your-backend-image:latest  # Replace with your built image
+        workingDir: /app
+        command: ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_HOST
+          value: "backend-db-service"
+        - name: DATABASE_NAME
+          value: "mydb"
+        - name: DATABASE_USER
+          valueFrom:
+            secretKeyRef:
+              name: backend-db-secret
+              key: username
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: backend-db-secret
+              key: password
+        - name: BLOCKCHAIN_URL
+          value: "http://hardhat-service:8545"
