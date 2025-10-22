@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
       - name: backend
-        image: your-backend-image:latest  # Replace with your built image
+        image: backend:latest 
+        imagePullPolicy: IfNotPresent 
         workingDir: /app
         command: ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
         ports:

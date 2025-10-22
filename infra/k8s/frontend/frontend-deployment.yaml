@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: frontend:latest
+          imagePullPolicy: Never
+          workingDir: /app
+          command: ["npm", "run", "dev"]
+          ports:
+            - containerPort: 5173
+          env:
+            - name: CHOKIDAR_USEPOLLING
+              value: "true"
+          volumeMounts:
+            - name: frontend-volume
+              mountPath: /app
+      volumes:
+        - name: frontend-volume
+          hostPath: # For development, mirrors your local folder
+            path: /mnt/smart-contract-studio/frontend/platform_ui
+            type: Directory
