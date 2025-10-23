@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blockchain-deployment
+  labels:
+    app: blockchain
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blockchain
+  template:
+    metadata:
+      labels:
+        app: blockchain
+    spec:
+      containers:
+        - name: blockchain
+          image: your-blockchain-image:latest   # Replace with your FastAPI image
+          imagePullPolicy: IfNotPresent
+          workingDir: /app
+          command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8545"]
+          ports:
+            - containerPort: 8545
+          env:
+            - name: BLOCKCHAIN_MODE
+              value: "dev"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: blockchain-db-secret
+                  key: url
