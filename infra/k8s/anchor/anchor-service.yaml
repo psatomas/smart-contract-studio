@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: anchor-service
+spec:
+  selector:
+    app: anchor
+  ports:
+    - name: rpc
+      port: 8899
+      targetPort: 8899
+    - name: ws
+      port: 8900
+      targetPort: 8900
+    - name: optional
+      port: 8901
+      targetPort: 8901
+  type: ClusterIP

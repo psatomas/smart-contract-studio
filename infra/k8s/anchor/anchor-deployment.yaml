@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anchor-deployment
+  labels:
+    app: anchor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: anchor
+  template:
+    metadata:
+      labels:
+        app: anchor
+    spec:
+      containers:
+        - name: anchor
+          image: anchor:latest
+          imagePullPolicy: Never # Use local image
+          workingDir: /workspace
+          command: ["/root/.local/share/solana/install/active_release/bin/solana-test-validator", "--reset"]
+          ports:
+            - containerPort: 8899  # RPC
+            - containerPort: 8900  # WebSocket
+            - containerPort: 8901  # Optional
+          tty: true
+          stdin: true
+          volumeMounts:
+            - name: anchor-volume
+              mountPath: /workspace
+      volumes:
+        - name: anchor-volume
+          hostPath:
+            path: /mnt/smart-contract-studio/blockchain/solana/anchor_project
+            type: Directory
