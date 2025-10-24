@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hardhat-deployment
+  labels:
+    app: hardhat
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hardhat
+  template:
+    metadata:
+      labels:
+        app: hardhat
+    spec:
+      containers:
+        - name: hardhat
+          image: hardhat:latest
+          imagePullPolicy: Never
+          workingDir: /app
+          command: ["npx", "hardhat", "node"]
+          ports:
+            - containerPort: 8545
+          volumeMounts:
+            - name: hardhat-volume
+              mountPath: /app
+      volumes:
+        - name: hardhat-volume
+          hostPath:
+            path: /mnt/smart-contract-studio/blockchain/ethereum/hardhat
+            type: Directory
