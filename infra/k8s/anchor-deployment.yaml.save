@@ -1,4 +1,0 @@
-kubectl apply -f infra/k8s/anchor-deployment.yaml
-kubectl apply -f infra/k8s/anchor-service.yaml
-kubectl get pods -w
-

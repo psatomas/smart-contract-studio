@@ -10,8 +10,9 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Foundry
-RUN curl -L https://foundry.paradigm.xyz | bash
+# Install Foundry (forge, cast, anvil)
+RUN curl -L https://foundry.paradigm.xyz | bash && \
+    /root/.foundry/bin/foundryup
 
 # Add Foundry to PATH
 ENV PATH="/root/.foundry/bin:${PATH}"
@@ -19,12 +20,12 @@ ENV PATH="/root/.foundry/bin:${PATH}"
 # Set working directory
 WORKDIR /app
 
-# Copy project files (optional, initial build)
+# Copy project files
 COPY . /app
 
 # Copy start script
 COPY start.sh /app/start.sh
 RUN chmod +x /app/start.sh
 
-# Start script by default
+# Default command
 CMD ["/app/start.sh"]
