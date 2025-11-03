@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: blockchain
-          image: your-blockchain-image:latest   # Replace with your FastAPI image
+          image:  blockchain:latest   # Replace with your FastAPI image
           imagePullPolicy: IfNotPresent
           workingDir: /app
           command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8545"]
