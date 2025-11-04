@@ -27,6 +27,4 @@ spec:
               mountPath: /app
       volumes:
         - name: hardhat-volume
-          hostPath:
-            path: /mnt/smart-contract-studio/blockchain/ethereum/hardhat
-            type: Directory
+          emptyDir: {}
