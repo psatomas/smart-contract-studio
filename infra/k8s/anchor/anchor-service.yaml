@@ -5,14 +5,17 @@ metadata:
 spec:
   selector:
     app: anchor
+  type: NodePort
   ports:
     - name: rpc
       port: 8899
       targetPort: 8899
+      nodePort: 30001
     - name: ws
       port: 8900
       targetPort: 8900
+      nodePort: 30002
     - name: optional
       port: 8901
       targetPort: 8901
-  type: ClusterIP
+      nodePort: 30003
