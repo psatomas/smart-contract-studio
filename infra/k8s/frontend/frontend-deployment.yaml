@@ -25,11 +25,5 @@ spec:
           env:
             - name: CHOKIDAR_USEPOLLING
               value: "true"
-          volumeMounts:
-            - name: frontend-volume
-              mountPath: /app
-      volumes:
-        - name: frontend-volume
-          hostPath: # For development, mirrors your local folder
-            path: /mnt/smart-contract-studio/frontend/platform_ui
-            type: Directory
+            - name: HOST
+              value: "0.0.0.0"
