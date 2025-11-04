@@ -18,13 +18,6 @@ spec:
         - name: hardhat
           image: hardhat:latest
           imagePullPolicy: Never
-          workingDir: /app
           command: ["npx", "hardhat", "node"]
           ports:
             - containerPort: 8545
-          volumeMounts:
-            - name: hardhat-volume
-              mountPath: /app
-      volumes:
-        - name: hardhat-volume
-          emptyDir: {}

@@ -32,5 +32,5 @@ spec:
       volumes:
         - name: anchor-volume
           hostPath:
-            path: /mnt/smart-contract-studio/blockchain/solana/anchor_project
+            path: /mnt/smart-contract-studio/blockchain/solana/anchor
             type: Directory
