@@ -107,7 +107,7 @@ services:
   # 🧱 ANCHOR (Solana validator)
   anchor:
     build:
-      context: ../blockchain/solana/anchor_project
+      context: ../blockchain/solana/anchor
       dockerfile: Dockerfile
     container_name: anchor
     ports:
@@ -117,7 +117,7 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ../blockchain/solana/anchor_project:/workspace
+      - ../blockchain/solana/anchor:/workspace
     networks:
       - app-network
 
