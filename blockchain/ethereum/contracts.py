@@ -1,13 +1,30 @@
-from .client import EthereumClient
+from abc import ABC, abstractmethod
 
-eth_client = EthereumClient()
 
-def deploy_dummy_contract():
-    if not eth_client.is_connected():
-        raise ConnectionError("Ethereum client not connected")
-    return "0xDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF"
+class ContractInterface(ABC):
+    @abstractmethod
+    def get_contract_info(self):
+        pass
 
-def get_contract_balance(address: str):
-    if not eth_client.is_connected():
-        raise ConnectionError("Ethereum client not connected")
-    return 1234567890
+    @abstractmethod
+    def trigger(self):
+        pass
+
+
+class DummyContract(ContractInterface):
+    def get_contract_info(self):
+        return {
+            "contract_name": "DummyContract",
+            "address": "0x0000000000000000000000000000000000000000",
+            "network": "localnet",
+            "type": "dummy"
+        }
+
+    def trigger(self):
+        return {
+            "message": "Dummy contract trigger executed",
+            "status": "success"
+        }
+
+
+contract = DummyContract()
