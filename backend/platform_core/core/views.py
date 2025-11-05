@@ -1,39 +1,35 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from .models import BlockchainEvent
 from .serializers import BlockchainEventSerializer
 
-def index(request):
-    return HttpResponse("Hello, this is the core index page!")
+# Health check endpoint
+class HealthCheckView(APIView):
+    def get(self, request):
+        return Response({"status": "ok"})
 
-def hello_world(request):
-    return JsonResponse({"message": "Hello from Django"})
 
-def get_contracts(request):
-    contract = {"id": 1, "name": "Test Contract", "status": "active"}
-    return JsonResponse({"contracts": [contract]})
+# Receive blockchain data from FastAPI
+class BlockchainEventReceiveView(APIView):
+    def post(self, request):
+        serializer = BlockchainEventSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"status": "ok"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-def get_users(request):
-    return JsonResponse({"users": []})
 
-def get_transactions(request):
-    return JsonResponse({"transactions": []})
+# Get all contracts (example static response for now)
+class ContractListView(APIView):
+    def get(self, request):
+        contract = {"id": 1, "name": "Test Contract", "status": "active"}
+        return Response({"contracts": [contract]})
 
-def receive_blockchain_data(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        tx_hash = data.get("tx_hash")
-        value = data.get("value")
-        print("Received from blockchain:", data)
-        # You could save to your Django models here
-        return JsonResponse({"status": "ok"})
-    return JsonResponse({"error": "POST required"}, status=400)
 
-class BlockchainEventListCreateView(generics.ListCreateAPIView):
-    queryset = BlockchainEvent.objects.all()
-    serializer_class = BlockchainEventSerializer
+# Get transactions (example, empty list)
+class TransactionListView(APIView):
+    def get(self, request):
+        return Response({"transactions": []})
+
 

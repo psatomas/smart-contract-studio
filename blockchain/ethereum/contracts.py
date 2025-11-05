@@ -1,30 +1,37 @@
-from abc import ABC, abstractmethod
 
+import os
+import json
+from .client import EthereumClient
 
-class ContractInterface(ABC):
-    @abstractmethod
-    def get_contract_info(self):
-        pass
+# Dummy client (replace with actual Hardhat connection later)
+eth_client = EthereumClient()
 
-    @abstractmethod
-    def trigger(self):
-        pass
+# Load deployed Lock contract info
+LOCK_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"  # example from deploy
 
+# Make path absolute relative to this file
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # blockchain/ethereum
+ABI_PATH = os.path.join(BASE_DIR, "hardhat/artifacts/contracts/Lock.sol/Lock.json")
 
-class DummyContract(ContractInterface):
-    def get_contract_info(self):
-        return {
-            "contract_name": "DummyContract",
-            "address": "0x0000000000000000000000000000000000000000",
-            "network": "localnet",
-            "type": "dummy"
-        }
+with open(ABI_PATH, "r") as f:
+    LOCK_ABI = json.load(f)["abi"]
 
-    def trigger(self):
-        return {
-            "message": "Dummy contract trigger executed",
-            "status": "success"
-        }
+# Placeholder signer
+class Signer:
+    def send_transaction(self, tx):
+        print("Sending transaction:", tx)
+        return {"hash": "0xDEADBEEF"}
 
+signer = Signer()
 
-contract = DummyContract()
+# Minimal contract wrapper
+class LockContract:
+    def __init__(self, address, abi):
+        self.address = address
+        self.abi = abi
+
+    def withdraw(self):
+        print("Calling withdraw on Lock contract")
+        return type("TxResponse", (), {"hash": b"\xde\xad\xbe\xef"})()
+
+lock = LockContract(LOCK_ADDRESS, LOCK_ABI)
