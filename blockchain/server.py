@@ -7,7 +7,7 @@ from ethereum.contracts import lock  # your Hardhat Lock contract
 
 app = FastAPI(title="Blockchain Service")
 
-DJANGO_URL = "http://127.0.0.1:8000/blockchain-data/"
+DJANGO_URL = "http://127.0.0.1:9000/blockchain-data/"
 
 # ---------------------------
 # Event handling
