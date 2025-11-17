@@ -36,6 +36,8 @@ psycopg2-binary==2.9.10
 pycryptodome==3.23.0
 pydantic==2.11.9
 pydantic_core==2.33.2
+pytest==8.3.3
+pytest-django==4.9.0
 python-dotenv==1.0.1
 pyunormalize==16.0.0
 regex==2025.9.18
