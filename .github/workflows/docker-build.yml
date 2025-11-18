@@ -1,0 +1,32 @@
+name: Docker Build
+
+on:
+  push:
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - ".github/workflows/docker-build.yml"
+  pull_request:
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - ".github/workflows/docker-build.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Backend Docker image
+        run: |
+          docker build -t smart-contract-studio-backend:latest ./backend
+
+      - name: Build Frontend Docker image
+        run: |
+          docker build -t smart-contract-studio-frontend:latest ./frontend/platform_ui
