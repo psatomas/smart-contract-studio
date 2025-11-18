@@ -29,4 +29,4 @@ jobs:
 
       - name: Build Frontend Docker image
         run: |
-          docker build -t smart-contract-studio-frontend:latest ./frontend/platform_ui
+          docker build -t smart-contract-studio-frontend:latest ./frontend
