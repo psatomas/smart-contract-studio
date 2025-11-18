@@ -1,0 +1,36 @@
+name: Docker Build & Push
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - ".github/workflows/docker-push.yml"
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build & Push Backend Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/smart-contract-studio-backend:latest ./backend
+          docker push ${{ secrets.DOCKER_USERNAME }}/smart-contract-studio-backend:latest
+
+      - name: Build & Push Frontend Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/smart-contract-studio-frontend:latest ./frontend/platform_ui
+          docker push ${{ secrets.DOCKER_USERNAME }}/smart-contract-studio-frontend:latest
