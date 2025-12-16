@@ -27,8 +27,12 @@ contract Lock {
     require(block.timestamp >= unlockTime, "You can't withdraw yet");
     require(msg.sender == owner, "You aren't the owner");
 
+    uint256 balance = address(this).balance;
+    require(balance > 0, "No ETH to withdraw");
+
     emit Withdrawal(address(this).balance, block.timestamp);
 
-    owner.transfer(address(this).balance);
+    (bool success, ) = owner.call{value: address(this).balance}("");
+    require(success, "ETH transfer failed");
   }
 }
