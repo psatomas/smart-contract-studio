@@ -1,10 +1,15 @@
-from ethereum.contracts import get_unlock_time, withdraw
+from fastapi import APIRouter
+from blockchain.ethereum.contracts import get_lock_contract
 
-@app.get("/contract/unlock-time")
+router = APIRouter(prefix="/contract", tags=["contract"])
+
+@router.get("/unlock-time")
 def read_unlock_time():
-    return {"unlock_time": get_unlock_time()}
+    lock = get_lock_contract()
+    return {"unlock_time": lock.unlock_time()}
 
-@app.post("/contract/withdraw")
-def call_withdraw():
-    receipt = withdraw()
+@router.post("/withdraw")
+def withdraw():
+    lock = get_lock_contract()
+    receipt = lock.withdraw()
     return {"tx_hash": receipt.transactionHash.hex()}

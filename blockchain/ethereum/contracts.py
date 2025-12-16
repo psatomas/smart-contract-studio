@@ -1,5 +1,3 @@
-# ethereum/contracts.py
-
 import os
 import json
 from web3 import Web3
@@ -9,33 +7,39 @@ from .client import EthereumClient
 # Paths and ABI
 # ==============================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-LOCK_JSON_PATH = os.path.join(BASE_DIR, "hardhat/artifacts/contracts/Lock.sol/Lock.json")
-LOCK_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"  # Update if deployed differently
+
+LOCK_JSON_PATH = os.path.join(
+    BASE_DIR,
+    "hardhat/artifacts/contracts/Lock.sol/Lock.json"
+)
+
+LOCK_ADDRESS = os.getenv(
+    "LOCK_ADDRESS",
+    "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+)
 
 with open(LOCK_JSON_PATH, "r") as f:
     LOCK_ABI = json.load(f)["abi"]
 
 # ==============================
-# LockContract Wrapper
+# LockContract wrapper
 # ==============================
 class LockContract:
-    def __init__(self, web3: Web3, signer: str, address=LOCK_ADDRESS, abi=LOCK_ABI):
+    def __init__(self, web3: Web3, signer: str):
         self.web3 = web3
         self.signer = signer
-        self.address = address
-        self.abi = abi
-        self.contract = web3.eth.contract(address=address, abi=abi)
+        self.contract = web3.eth.contract(
+            address=LOCK_ADDRESS,
+            abi=LOCK_ABI
+        )
 
     def owner(self):
-        """Read-only call to owner()"""
         return self.contract.functions.owner().call()
 
     def unlock_time(self):
-        """Read-only call to unlockTime()"""
         return self.contract.functions.unlockTime().call()
 
     def withdraw(self):
-        """Build, sign, and send withdraw transaction"""
         tx = self.contract.functions.withdraw().build_transaction({
             "from": self.signer,
             "nonce": self.web3.eth.get_transaction_count(self.signer),
@@ -46,28 +50,28 @@ class LockContract:
 
         private_key = os.getenv("PRIVATE_KEY")
         if not private_key:
-            raise ValueError("Set PRIVATE_KEY env variable for signing transaction")
+            raise RuntimeError("PRIVATE_KEY not set")
 
-        signed_tx = self.web3.eth.account.sign_transaction(tx, private_key=private_key)
-        tx_hash = self.web3.eth.send_raw_transaction(signed_tx.rawTransaction)
-
-        # Wait for receipt
-        receipt = self.web3.eth.wait_for_transaction_receipt(tx_hash)
-        if receipt.status == 1:
-            print(f"Transaction successful: {tx_hash.hex()}")
-        else:
-            print(f"Transaction failed: {tx_hash.hex()}")
-        return receipt
+        signed = self.web3.eth.account.sign_transaction(tx, private_key)
+        tx_hash = self.web3.eth.send_raw_transaction(signed.rawTransaction)
+        return self.web3.eth.wait_for_transaction_receipt(tx_hash)
 
 # ==============================
-# Helper to get LockContract instance
+# Lazy singleton
 # ==============================
-def get_lock_contract(rpc_url="http://hardhat-service:8545"):
-    """
-    Connects to the Ethereum node and returns LockContract instance
-    """
-    eth_client = EthereumClient(rpc_url=rpc_url)
-    if not eth_client.is_connected():
-        raise ConnectionError(f"Cannot connect to Ethereum node at {rpc_url}")
-    signer = eth_client.get_signer()
-    return LockContract(web3=eth_client.web3, signer=signer)
+_lock = None
+
+def get_lock_contract():
+    global _lock
+    if _lock is None:
+        client = EthereumClient(
+            rpc_url=os.getenv("ETH_RPC_URL", "http://127.0.0.1:8545")
+        )
+        if not client.is_connected():
+            raise ConnectionError("Cannot connect to Ethereum node")
+
+        _lock = LockContract(
+            web3=client.web3,
+            signer=client.get_signer()
+        )
+    return _lock
