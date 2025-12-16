@@ -1,80 +1,90 @@
-# blockchain/server.py
 import time
 import threading
 import requests
 from fastapi import FastAPI
-from ethereum.contracts import lock  # your Hardhat Lock contract
+from blockchain.ethereum.contracts import get_lock_contract
 
 app = FastAPI(title="Blockchain Service")
 
-DJANGO_URL = "http://127.0.0.1:9000/blockchain-data/"
+DJANGO_URL = "http://backend:8000/blockchain-data/"
 
-# ---------------------------
+# ==============================
+# Helpers
+# ==============================
+def get_lock():
+    return get_lock_contract()
+
+# ==============================
 # Event handling
-# ---------------------------
+# ==============================
 def handle_event(event):
     payload = {
         "tx_hash": event["transactionHash"].hex(),
         "contract_address": event["address"],
-        "amount": event["args"]["amount"],
-        "timestamp": event["args"]["when"]
     }
+
     try:
-        res = requests.post(DJANGO_URL, json=payload)
+        res = requests.post(DJANGO_URL, json=payload, timeout=5)
         res.raise_for_status()
-        print("Event sent to Django successfully:", payload)
+        print("Event sent to Django:", payload)
     except Exception as e:
-        print("Failed sending event to Django:", e)
+        print("Failed to send event:", e)
 
-
-# ---------------------------
-# Event listener thread
-# ---------------------------
+# ==============================
+# Event listener
+# ==============================
 def event_listener():
+    lock = get_lock()
     last_block = lock.web3.eth.block_number
 
     while True:
-        current_block = lock.web3.eth.block_number
-        if current_block > last_block:
-            try:
+        try:
+            current_block = lock.web3.eth.block_number
+
+            if current_block > last_block:
                 events = lock.contract.events.Withdrawal().get_logs(
                     fromBlock=last_block + 1,
                     toBlock=current_block
                 )
+
                 for event in events:
                     handle_event(event)
+
                 last_block = current_block
-            except Exception as e:
-                print("Error fetching events:", e)
+
+        except Exception as e:
+            print("Event listener error:", e)
 
         time.sleep(2)
 
+# ==============================
+# FastAPI lifecycle
+# ==============================
+@app.on_event("startup")
+def start_event_listener():
+    threading.Thread(target=event_listener, daemon=True).start()
 
-listener_thread = threading.Thread(target=event_listener, daemon=True)
-listener_thread.start()
-
-
-# ---------------------------
-# FastAPI endpoints
-# ---------------------------
+# ==============================
+# API endpoints
+# ==============================
 @app.get("/health")
-def health_check():
+def health():
     return {"status": "ok"}
 
+@app.get("/health/blockchain")
+def blockchain_health():
+    lock = get_lock()
+    return {
+        "owner": lock.owner(),
+        "unlock_time": lock.unlock_time()
+    }
 
 @app.post("/contracts/lock/withdraw")
 def withdraw_lock():
-    try:
-        # Trigger withdraw and get the tx object
-        tx = lock.withdraw()  # Your lock object handles signing & sending internally
-        # Return the real transaction hash
-        tx_hash = getattr(tx, "hash", None)
-        if tx_hash:
-            return {"status": "success", "tx_hash": tx_hash.hex()}
-        else:
-            return {"status": "success", "tx": str(tx)}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
+    lock = get_lock()
+    receipt = lock.withdraw()
+    return {"tx_hash": receipt.transactionHash.hex()}
+
 
 
 
