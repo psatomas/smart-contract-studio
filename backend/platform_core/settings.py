@@ -100,6 +100,8 @@ DATABASES = {
     }
 }
 
+BLOCKCHAIN_API_TOKEN = os.getenv("BLOCKCHAIN_API_TOKEN")
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
