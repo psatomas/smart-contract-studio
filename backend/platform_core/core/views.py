@@ -1,35 +1,32 @@
+from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import BlockchainEvent
 from .serializers import BlockchainEventSerializer
 
-# Health check endpoint
-class HealthCheckView(APIView):
-    def get(self, request):
-        return Response({"status": "ok"})
-
-
-# Receive blockchain data from FastAPI
 class BlockchainEventReceiveView(APIView):
+    """
+    Receives blockchain events via POST.
+    Secured with an API token in headers.
+    """
     def post(self, request):
+        # Step 1: Validate API token
+        token = request.headers.get("X-BLOCKCHAIN-TOKEN")
+        if token != getattr(settings, "BLOCKCHAIN_API_TOKEN", ""):
+            return Response({"error": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # Step 2: Validate data and save
         serializer = BlockchainEventSerializer(data=request.data)
         if serializer.is_valid():
+            # Step 3: Check idempotency (avoid duplicates)
+            if BlockchainEvent.objects.filter(tx_hash=serializer.validated_data['tx_hash']).exists():
+                return Response({"status": "already exists"}, status=status.HTTP_200_OK)
+
             serializer.save()
             return Response({"status": "ok"}, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-# Get all contracts (example static response for now)
-class ContractListView(APIView):
-    def get(self, request):
-        contract = {"id": 1, "name": "Test Contract", "status": "active"}
-        return Response({"contracts": [contract]})
-
-
-# Get transactions (example, empty list)
-class TransactionListView(APIView):
-    def get(self, request):
-        return Response({"transactions": []})
 
 
